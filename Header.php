@@ -4,7 +4,7 @@ error_reporting(0);
 date_default_timezone_set('Asia/Shanghai');
 
 include "get_mysql_credentials.php";
-$con = mysqli_connect("localhost", $mysql_username, $mysql_password, "lrr");
+$con = mysqli_connect("localhost", $mysql_username, $mysql_password, "lrr_database");
 
 // Check database connection
 if (mysqli_connect_errno()) {
@@ -67,9 +67,16 @@ if (mysqli_connect_errno()) {
             echo  "&nbsp;&nbsp;&nbsp;  <i class=\"fa fa-cog\" style=\"color:#fff;\"> </i> &nbsp;<a style='color:#fff !important' href=\"~\..\Admin.php\">Admin </a>";
           }
         ?>
-
-        &nbsp;&nbsp;&nbsp; <i class="fa fa-user" style="color:#fff;"> </i>
-        &nbsp;<a href="#" style='color:#fff !important' onclick="updatePass(<?php echo $_SESSION['user_id']; ?>)">Update password</a>
+        &nbsp;&nbsp;&nbsp;
+        <div class="dropdown">
+           <i class="fa fa-user" style="color:#fff;"> </i>
+           <a style='color:#fff !important' href="#" class="dropdown-toggle" data-toggle="dropdown">Update</a>
+           <div class="dropdown-menu">
+              <a href="UpdateStudent.php" class="dropdown-item">Update Status</a>
+              <div class="dropdown-divider"></div>
+              <a href="#" class="dropdown-item" onclick="updatePass(<?php echo $_SESSION['user_id']; ?>)">Update password</a>
+           </div>
+        </div>
         &nbsp;&nbsp;&nbsp; <i class="fa fa-lock" style="color:#fff;"> </i> &nbsp;<a style='color:#fff !important' href="~\..\logout.php">Logout </a>
 
       <?php
@@ -150,7 +157,7 @@ if (mysqli_connect_errno()) {
     }
   </style>
 
-  <script>
+<script>
     function updatePass(id) {
 
       var pass = prompt("Enter your new password : ", "Enter a strong password");
