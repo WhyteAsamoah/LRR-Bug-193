@@ -14,7 +14,7 @@ date_default_timezone_set('Asia/Shanghai');
 
 // Connect to MySQL database
 include "get_mysql_credentials.php";
-$con = mysqli_connect("localhost",  $mysql_username, $mysql_password, "lrr");
+$con = mysqli_connect("localhost",  $mysql_username, $mysql_password, "lrr_database");
 
 // Check connection
 if (mysqli_connect_errno()) {
@@ -114,7 +114,7 @@ if (!empty($_POST["frm_signup_2"])) {
         header("Location: signup.php");
         return;
     }
-
+    
     // apply password_hash()
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
     $sql = "INSERT INTO `users_table`(`Email`, `Password`, `Full_Name`, `UserType`, `Student_ID`) VALUES "
@@ -267,6 +267,37 @@ if (!empty($_POST["frm_reset_password"])) {
     }
 }
 
+// ################################ UPDATE STUDENT STATUS  ##################################
+if (!empty($_POST["update-student"])) {
+    $fullname = mysqli_real_escape_string($con, $_POST["fullname"]);
+    $student_id = mysqli_real_escape_string($con, $_POST["user_student_id"]);
+    $email = mysqli_real_escape_string($con, $_POST["email"]);
+    $userid = $_SESSION['user_id'];
+
+            $sql = "UPDATE users_table SET Email = '$email', Full_Name = '$fullname', Student_ID = '$student_id' WHERE User_ID = '$userid' ";
+            if ($con->query($sql) === TRUE) {
+                $_SESSION['user_fullname'] = $fullname;  
+                $_SESSION['user_student_id'] = $student_id;  
+                $_SESSION['user_email'] = $email;  
+                header("Location: Courses.php");
+            } else {
+                echo ("Error description: ". mysqli_error($con));
+            }
+
+    // validate student number
+    if (!is_valid_student_number($student_id)) {
+        $_SESSION["updatestudent_info"] = "Invalid student number.";
+        header("Location: UpdateStudent.php");
+        return;
+    }
+
+    // validate email
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['updatestudent_info'] = "Invalid email address.";
+        header("Location: UpdateStudent.php");
+        return;
+    }
+}
 // ############################### CREATE Lecturer/TA USER ##################################
 if (!empty($_POST["frm_createlecturrer"])) {
     $email = mysqli_real_escape_string($con, $_POST["email"]);
